@@ -3,10 +3,8 @@ version: 0.2
 phases:
   install:
     runtime-versions:
-      nodejs: 14
+      java: corretto17
     commands:
-      - echo Installing NPM dependencies...
-      - npm install
       - echo "Instalando OWASP Dependency-Check..."
       - curl -sLO https://github.com/jeremylong/DependencyCheck/releases/download/v9.0.9/dependency-check-9.0.9-release.zip
       - unzip dependency-check-9.0.9-release.zip
