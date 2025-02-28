@@ -19,13 +19,13 @@ phases:
   build:
     commands:
       - echo "Rodando análise de dependências..."
-      - dependency-check.sh --project "meu-projeto" --scan . --format HTML --out reports/
+      - dependency-check.sh --project "meu-projeto" --scan . --format HTML --out reports/ --nvdApiKey $KEY_API_NVD
 
   post_build:
     commands:
       - echo "Análise concluída! Salvando resultados..."
-      - aws s3 cp reports/ s3://labdevopsbucketcesar/labDevOpsNode --recursive
+      - if [ -d "reports" ]; then aws s3 cp reports/ s3://labdevopsbucketcesar/labDevOpsNode --recursive; else echo "Nenhum relatório gerado."; fi
 
 artifacts:
   files:
-    - '**/*'           # Inclui todos os arquivos e subpastas recursivamente
+    - '**/*'
