@@ -12,9 +12,14 @@ phases:
       - unzip dependency-check-9.0.9-release.zip
       - export PATH=$PATH:$(pwd)/dependency-check/bin
 
+  pre_build:
+    commands:
+      - echo Pre-build phase
+
   build:
-    - echo "Rodando análise de dependências..."
-    - dependency-check.sh --project "meu-projeto" --scan . --format HTML --out reports/
+    commands:
+      - echo "Rodando análise de dependências..."
+      - dependency-check.sh --project "meu-projeto" --scan . --format HTML --out reports/
 
   post_build:
     commands:
