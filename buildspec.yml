@@ -18,8 +18,10 @@ phases:
 
   build:
     commands:
+      - echo "Verificando acesso à API do NVD..."
+      - curl -I https://services.nvd.nist.gov
       - echo "Rodando análise de dependências..."
-      - dependency-check.sh --project "meu-projeto" --scan . --format HTML --out reports/ --nvdApiKey "bd756413-0b82-4dd1-9cdc-8badb779755d" --nvdApiDelay 15000
+      - dependency-check.sh --project "meu-projeto" --scan . --format HTML --out reports/ --nvdApiKey "bd756413-0b82-4dd1-9cdc-8badb779755d" --nvdApiDelay 5000
 
   post_build:
     commands:
