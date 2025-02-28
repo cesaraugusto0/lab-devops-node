@@ -19,7 +19,7 @@ phases:
   build:
     commands:
       - echo "Rodando análise de dependências..."
-      - dependency-check.sh --project "meu-projeto" --scan . --format HTML --out reports/ --nvdApiKey $KEY_API_NVD
+      - dependency-check.sh --project "meu-projeto" --scan . --format HTML --out reports/ --nvdApiKey "bd756413-0b82-4dd1-9cdc-8badb779755d" --nvdApiDelay 5000
 
   post_build:
     commands:
