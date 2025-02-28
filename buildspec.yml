@@ -7,15 +7,19 @@ phases:
     commands:
       - echo Installing NPM dependencies...
       - npm install
-  pre_build:
-    commands:
-      - echo Pre-build phase
+      - echo "Instalando OWASP Dependency-Check..."
+      - curl -sLO https://github.com/jeremylong/DependencyCheck/releases/download/v9.0.9/dependency-check-9.0.9-release.zip
+      - unzip dependency-check-9.0.9-release.zip
+      - export PATH=$PATH:$(pwd)/dependency-check/bin
+
   build:
-    commands:
-      - echo Build phase
+    - echo "Rodando análise de dependências..."
+    - dependency-check.sh --project "meu-projeto" --scan . --format HTML --out reports/
+
   post_build:
     commands:
-      - echo Build completed on `date`
+      - echo "Análise concluída! Salvando resultados..."
+      - aws s3 cp reports/ s3://labdevopsbucketcesar/labDevOpsNode --recursive
 
 artifacts:
   files:
