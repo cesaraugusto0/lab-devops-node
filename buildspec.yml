@@ -1,4 +1,4 @@
-version: 0.28  # Define a versão do formato do arquivo
+version: 0.3  # Define a versão do formato do arquivo
 
 phases:
   install:
@@ -61,7 +61,7 @@ phases:
       - echo "Análise concluída! Salvando resultados..."  # Mensagem informativa
       - mkdir -p reports  # Garante que o diretório de relatórios existe
       - ls -lah reports/  # Lista os arquivos gerados para verificar se estão corretos
-      - aws s3 cp reports/ s3://labdevopsbucketcesar --recursive || echo "Nenhum relatório encontrado para upload."  # Faz upload dos relatórios para um bucket S3
+      - aws s3 cp reports/ s3://labdevopsbucketcesar/labDevOpsNode --recursive || echo "Nenhum relatório encontrado para upload."  # Faz upload dos relatórios para um bucket S3
 
 artifacts:
   files:
