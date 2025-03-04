@@ -1,4 +1,4 @@
-version: 0.3  # Define a versão do formato do arquivo
+version: 0.2
 
 phases:
   install:
