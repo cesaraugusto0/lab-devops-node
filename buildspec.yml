@@ -46,7 +46,8 @@ phases:
       - $DEPCHECK_DIR/bin/dependency-check.sh --version
 
       - echo "Executando análise com logs detalhados..."
-      - $DEPCHECK_DIR/bin/dependency-check.sh --project "meu-projeto" --scan "." --format "HTML" --out "reports/" --nvdApiKey "$NVD_API_KEY" --debug || echo "Falha na análise de dependências, verificar logs."
+      # Executa o Dependency-Check
+      - $DEPCHECK_DIR/bin/dependency-check.sh --project "meu-projeto" --scan "." --format "HTML" --out "reports/" --nvdApiKey "$NVD_API_KEY" || echo "Falha na análise de dependências, verificar logs."
 
   post_build:
     commands:
