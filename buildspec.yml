@@ -52,7 +52,6 @@ phases:
         --format "HTML" \
         --out "reports/" \
         --nvdApiKey "$NVD_API_KEY" \
-        --log "reports/dependency-check.log" \
         --debug || echo "Falha na análise de dependências, verificar logs."
 
   post_build:
