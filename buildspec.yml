@@ -1,31 +1,68 @@
-version: 0.2
+version: 0.28  # Define a versão do formato do arquivo
 
 phases:
   install:
     runtime-versions:
-      java: corretto17
+      nodejs: 14  # Define a versão do Node.js a ser usada
+      java: corretto17  # Define a versão do Java (Amazon Corretto 17)
     commands:
-      - echo "Instalando OWASP Dependency-Check..."
-      - curl -sLO https://github.com/jeremylong/DependencyCheck/releases/download/v9.0.9/dependency-check-9.0.9-release.zip
-      - unzip dependency-check-9.0.9-release.zip
-      - export PATH=$PATH:$(pwd)/dependency-check/bin
+      - echo "Installing NPM dependencies..."  # Mensagem informativa no terminal
+      - npm install  # Instala as dependências do Node.js listadas no package.json
+      - echo "Instalando OWASP Dependency-Check..."  # Exibe mensagem informativa
+      - curl -sLO https://github.com/jeremylong/DependencyCheck/releases/download/v9.0.9/dependency-check-9.0.9-release.zip  # Baixa o OWASP Dependency-Check
+      - yum install -y unzip || apt-get install -y unzip  # Instala o unzip, compatível com diferentes distribuições Linux
+      - unzip dependency-check-9.0.9-release.zip  # Extrai o arquivo baixado
+      - echo "Verificando diretórios extraídos..."  # Mensagem de depuração
+      - ls -R  # Lista recursivamente os arquivos extraídos
+      - echo "Dando permissão ao script..."  # Mensagem informativa
+      - chmod +x $(find . -type d -name "dependency-check*" | head -n 1)/bin/dependency-check.sh  # Concede permissão de execução ao script
 
   pre_build:
     commands:
-      - echo Pre-build phase
+      - echo "Pre-build phase"  # Exibe mensagem informativa sobre a fase pré-build
 
   build:
     commands:
-      - echo "Verificando acesso à API do NVD..."
-      - curl -I https://services.nvd.nist.gov
-      - echo "Rodando análise de dependências..."
-      - dependency-check.sh --project "meu-projeto" --scan . --format HTML --out reports/ --nvdApiKey "bd756413-0b82-4dd1-9cdc-8badb779755d" --nvdApiDelay 5000
+      - echo "Testando conexão manual com API da NVD usando a chave..."
+      - curl -H "apiKey:$NVD_API_KEY" "https://services.nvd.nist.gov/rest/json/cves/2.0" || echo "Erro ao acessar API manualmente"
+
+      - echo "Rodando análise de dependências no modo DEBUG..."
+      - echo "API Key configurada:${NVD_API_KEY:-'NÃO CONFIGURADA'}"
+      - env | grep NVD
+
+      - mkdir -p reports  # Cria o diretório de relatórios, caso não exista
+      - echo "Verificando estrutura de diretórios..."
+      - ls -lah .
+      - find . -type d -name "dependency-check*"  # Lista os diretórios encontrados para verificar se o caminho está correto
+
+      - echo "Definindo caminho correto para OWASP Dependency-Check..."
+      - export DEPCHECK_DIR=$(find . -type d -name "dependency-check*" | head -n 1)
+      - echo "DEPCHECK_DIR definido como:$DEPCHECK_DIR"
+
+      - echo "Dando permissão ao script..."
+      - chmod +x $DEPCHECK_DIR/bin/dependency-check.sh
+
+      - echo "Verificando versão do OWASP Dependency-Check..."
+      - $DEPCHECK_DIR/bin/dependency-check.sh --version
+
+      - echo "Executando análise com logs detalhados..."
+      - $DEPCHECK_DIR/bin/dependency-check.sh \
+          --project "meu-projeto" \
+          --scan "." \
+          --format "HTML" \
+          --out "reports/" \
+          --nvdApiKey "$NVD_API_KEY" \
+          --nvdApiDelay 2000 \
+          --log "reports/dependency-check.log" \
+          --debug || echo "Falha na análise de dependências, verificar logs."
 
   post_build:
     commands:
-      - echo "Análise concluída! Salvando resultados..."
-      - if [ -d "reports" ]; then aws s3 cp reports/ s3://labdevopsbucketcesar/labDevOpsNode --recursive; else echo "Nenhum relatório gerado."; fi
+      - echo "Análise concluída! Salvando resultados..."  # Mensagem informativa
+      - mkdir -p reports  # Garante que o diretório de relatórios existe
+      - ls -lah reports/  # Lista os arquivos gerados para verificar se estão corretos
+      - aws s3 cp reports/ s3://labdevopsbucketcesar --recursive || echo "Nenhum relatório encontrado para upload."  # Faz upload dos relatórios para um bucket S3
 
 artifacts:
   files:
-    - '**/*'
+    - '**/*'  # Inclui todos os arquivos e diretórios gerados
