@@ -46,7 +46,15 @@ phases:
       - $DEPCHECK_DIR/bin/dependency-check.sh --version
 
       - echo "Executando análise com logs detalhados..."
-      - $DEPCHECK_DIR/bin/dependency-check.sh --project "meu-projeto" --scan "." --format "HTML" --out "reports/" --nvdApiKey "$NVD_API_KEY" --nvdApiDelay 2000 --log "reports/dependency-check.log" --debug || echo "Falha na análise de dependências, verificar logs."
+      - $DEPCHECK_DIR/bin/dependency-check.sh \
+          --project "meu-projeto" \
+          --scan "." \
+          --format "HTML" \
+          --out "reports/" \
+          --nvdApiKey "$NVD_API_KEY" \
+          --nvdApiDelay 2000 \
+          --log "reports/dependency-check.log"
+
 
   post_build:
     commands:
