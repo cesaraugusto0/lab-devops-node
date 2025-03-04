@@ -48,7 +48,7 @@ phases:
       - echo "Executando análise com logs detalhados..."
       - $DEPCHECK_DIR/bin/dependency-check.sh \
         --project "meu-projeto" \
-        --scan "." \
+        --scan "." \ 
         --format "HTML" \
         --out "reports/" \
         --nvdApiKey "$NVD_API_KEY" \
